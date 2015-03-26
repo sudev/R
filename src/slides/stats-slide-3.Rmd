@@ -1,0 +1,229 @@
+---
+title: "Statistics slide 3+4"
+author: "Sudev"
+date: "Saturday, February 14, 2015"
+output: html_document
+---
+
+## Data Summary
+
+- Categorical (Qualitative)
+    * Nominal - No order 
+        - Examples - ID Numbers, eye color, zip codes 
+        - Operations - `=` and `!=`
+    * Ordinal - Order makes sense
+        - Examples - Grades, height, rankings
+        - Operations - `=`, `!=`, `<` and `>`
+- Numeric (Quantitative)
+    * Interval - No true zero division
+        - Examples - Calender dates(you cant divide 30th and 15th and say this is twice as high), temperature in C/F
+        - Operations - `=`, `!=`, `<`, `>`, `+` and `-`
+    * Ratio -  True zero divsion 
+        - Examples - Length, Temperature in Kelvin, time, counts 
+        - Operations - `=`, `!=`, `<`, `>`, `+`, `-`, `*` and `/`
+
+Examples 
+
+- Number of telephones in your home 
+    * Discrete, quanti, ratio 
+- You own a  cell phone or not 
+    * Binary Discrete, quali, nominal
+- Number of calls you made last week 
+    * Discrete,  quanti, ratio 
+- Length of your longest phone call 
+    * Continous, quanti,  ratio
+- Temperature in degress Fahrenheit 
+    * Continous, quanti,  interval
+- Temperature in degress Celsius 
+    * Continous, quanti,  interval
+- Temperature in Kelvin 
+    * Continous, quanti,  ratio
+    
+    
+Note : What really matters with R is that if you have rightly classified variables into Categorical / Numeric i.e. in R as factor / numeric.
+
+## Data Frame 
+
+Whenever we eread in data, mostly the csv be read as data frame.
+
+```{r}
+alphabets = c("a", "b", "c", "d")
+numbres = c(1, 2, 3, 4)
+df <- data.frame(Coloumn1_Alphabets=alphabets, Coloumn2_Numbers=numbres)
+df
+```
+
+#### Writing a data set
+
+```{r}
+write.csv(df, "df.csv")
+# ?write.csv
+```
+
+## Sampling 
+
+- Sampling involves using only a random subset of the data for analysis.      
+
+- Data minners are insterested in sampling because sometimes using all the data they have is too slow and unnecessary.
+
+- Sample is a representative, hence whatever functions you apply on random sample, will yield similar results on entire datasets.
+
+- Most basic sampling used is SRS "simple random sample". Other methods are cluster sampling, strattified sampling etc. 
+
+
+In R, you can use the funciton `sample` to get random sample data from a dataset. 
+```{r}
+# Lets create a series which repeats the pattern 12345 and  of length = 1,000,000
+y <- rep(1:5, len = 1000000)
+# Now we use a function sample
+sam <- sample(1:1000000, size = 10)
+# sam will contain random numbers within the specified interval
+sam
+y[sam]
+# Mean of entire dataset 
+mean(y)
+# Mean of the sample 
+mean(y[sam])
+# And if we increase the number of sample
+sam2 <- sample(1:1000000, size = 1000)
+# mean(sample) will approach the mean(population)
+mean(y[sam2])
+```
+
+There is some ratio known as sampling error, using which you can actually calculate the factor by which you have increased/decreased jthe error by varying sample size. Read more about sampling error [here](). 
+
+- sampling can be tricky or ineffective when the data has a more complex structure than simply independent observations.
+
+## Data Visualization 
+
+### The histogram 
+A plot that displays the disribution of values for attributes by dividing the possible values into bins and showing the number of object that fall into each bin.
+Setting the data folder
+```{r}
+DATA_FOLDER <- "C:/Users/sudev.ac/Desktop/Everything Else/R/"
+```
+
+Make a frequency histogram in R for the exam scores using bins of width 10 beginning at 120 and ending at 200.
+```{r}
+exam_scores <- read.csv(paste(DATA_FOLDER, "exam_scores.csv", sep =''),  header = F)
+hist(exam_scores[,1], breaks=seq(120,200,by=10), col="red", xlab="Exam Scores", ylab="Frequency", main="Exam Score Histogram") 
+```
+
+#### Making custom graphs in R 
+Make a frequency polygon in R for the exam scores using bins of width 10 beginning at 120 and ending at 200.
+```{r}
+my_hist<-hist(exam_scores[,1], breaks=seq(120,200,by=10),plot=FALSE)
+counts<-my_hist$counts
+counts
+breaks<-my_hist$breaks
+breaks
+plot(c(115,breaks+5),
+  c(0,counts,0),
+  pch=19,
+  xlab="Exam Scores",
+  ylab="Frequency",main="Frequency Polygon")
+lines(c(115,breaks+5),c(0,counts,0))
+
+```
+
+### Cummulative Distribution function 
+
+- A cumulative distribution function(CDF) shows the probability that a point is less than a value.
+- For each observed value, an empirical cumulative distribution function(ECDF) shows the fraction of points that are less than this value
+
+Make a plot of the ECDF for the exam scores using the function "ecdf"in R.
+```{r}
+plot(ecdf(exam_scores[,1]),
+verticals= TRUE,
+do.p=FALSE,
+main="ECDF for Exam Scores",
+xlab="Exam Scores",
+ylab="Cumulative Percent")
+```
+
+
+### Multiple Plots 
+Plotting relative percentage of student scores.
+```{r}
+more_exam_scores <- read.csv(paste(DATA_FOLDER, "more_exam_scores.csv", sep=''),header=F)
+
+my_new_hist<-hist(more_exam_scores[,1],
+  breaks=seq(100,200,by=10), plot=FALSE)
+new_counts <- my_new_hist$counts
+new_breaks <- my_new_hist$breaks
+plot(c(95,new_breaks+5), c(0,new_counts/37,0),
+  pch=19,xlab="Exam Scores",
+  ylab="Relative Frequency", main="Relative
+  Frequency Polygons", ylim=c(0,.30))
+
+lines(c(95,new_breaks+5), c(0,new_counts/37,0), lty=2)
+points(c(115,breaks+5),c(0,counts/40,0), col="blue",pch=19)
+lines(c(115,breaks+5),c(0,counts/40,0), col="blue",lty=1)
+legend(110,.25,c("Exam 1","Exam 2"),  col=c("black","blue"),lty=c(2,1),pch=19)
+```
+
+
+### Paired Data
+For visualizing paired numeric data, scatter plots (Page 116) are extremely useful.
+
+Use R to make a scatter plot of the exam scores at www.stats202.com/exams_and_names.csvwith the first exam on the x-axis and the second exam on the y-axis. Scale the x-axis and y-axis both from 100 to 200. Add the diagonal line (y=x) to the plot. What does this plot reveal?
+
+```{r}
+data<-read.csv(paste(DATA_FOLDER, "exams_and_names.csv", sep=''))
+plot(data$Exam.1,data$Exam.2,
+xlim=c(100,200),ylim=c(100,200),
+pch=19,
+main="Exam Scores",xlab="Exam 1",ylab="Exam 2")
+abline(c(0,1))
+
+```
+
+##### Labelling scatter plots
+Use the text() command in R to label the points for the students who scored lower than 150 on the first exam. 
+```{r}
+
+# Make a plot, same as above 
+data<-read.csv(paste(DATA_FOLDER, "exams_and_names.csv", sep=''))
+plot(data$Exam.1,data$Exam.2,
+xlim=c(100,200),ylim=c(100,200),
+pch=19,
+main="Exam Scores",xlab="Exam 1",ylab="Exam 2")
+abline(c(0,1))
+
+
+text(data$Exam.1[data$Exam.1<150],
+  data$Exam.2[data$Exam.1<150],
+  labels=data$Student[data$Exam.1<150],adj=1)
+
+```
+
+Use the identify command to label the points for the two students who did better on the second exam than the first exam. Use the first column in the data set for the labels.
+
+```{r eval=FALSE}
+identify(data$Exam.1,data$Exam.2, labels=data$Student)
+
+```
+
+#### Boxplot 
+- Boxplots help you visualize the differences in the medians of multiple attributes relative to the variation
+
+```{r}
+data<-read.csv("exams_and_names.csv")
+boxplot(data[,2],data[,3],col="blue",
+main="Exam Scores",
+names=c("Exam1","Exam 2"),ylab="Exam Score")
+```
+
+- Boxplots are useful in finding the outliers in a cluster.
+
+###Note 
+
+- All these functions are standard grph plotting methods that comes along with the R-core pacckage. 
+- There are lot many newer packages like `ggplot` available for plotting, these graph plotting packages are more flexible.
+- Here is an example graph repository which uses smart meter data and plots using `ggplot`. [github link](https://github.com/sudev/ExData_Plotting1)
+
+
+Courtesy
+========
+  - Shamelesly copied form here and there + my examples. Mainly [Stats 202](stats202.com).
+  - Created using [Markdown](http://en.wikipedia.org/wiki/Markdown) + [Knitr](http://yihui.name/knitr/)

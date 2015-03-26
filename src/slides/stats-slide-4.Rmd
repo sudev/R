@@ -1,0 +1,225 @@
+---
+title: "stats-slide-4"
+author: "Sudev"
+date: "Wednesday, February 25, 2015"
+output: html_document
+---
+
+
+## We will talk about 
+
+- Mean 
+- Median 
+- Variance 
+- Standard Deviation 
+- Correlation 
+- Associative Analysis 
+- A tutorial on [boxplots](http://msenux.redwoods.edu/math/R/boxplot.php), amazing stuff.
+
+# Measure of location 
+- **Mean** - is the average of the datapoints 
+- **Median** - is the 50th percentile.     
+[Calculating median](http://mathworld.wolfram.com/StatisticalMedian.html)         
+  *Note* - [Percentile](http://en.wikipedia.org/wiki/Percentile) is different from percentage.
+- Terminology 1st, 2nd and 3rd quartiles are the 25th, 50th and 75th percentiles respectively.
+
+![alt text](assets/slide-7-1.PNG)
+
+<br /> 
+<br /> 
+<br /> 
+
+# Measure of Spread
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-2.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+- (Variance) = sum(  x - mean ) / (n - 1)
+- standard deviation = sqrt(variance)
+
+Standard deviation is the average distance from the mean value.
+
+```{r}
+x <- c(2, 10, 22, 43, 18)
+mean(x)
+median(x)
+sd(x)
+```
+
+
+
+<br /> 
+<br /> 
+<br /> 
+
+### Measure of Association 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-3.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+- Correlation 
+- [Dont know correlation ?](https://www.mathsisfun.com/data/correlation.html)
+
+
+
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-4.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+
+```{r}
+# Creating a sample correlated X and Y vectors 
+x <- 1:10 
+y <- (x+x) + 15
+cor(x,y)
+plot(x, y)
+
+
+# runif function generates random numbers
+# Correlation for random sample vectors X and Y
+x <- runif(100)
+y <- runif(100)
+cor(x,y)
+plot(x, y)
+```
+
+- The correlation measure helps you decide the features for Kmeans sort of algorithms.
+
+
+## Association Analysis 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-5.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-6.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-11.PNG)
+<br /> 
+<br /> 
+<br /> 
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-12.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-7.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+
+```{r}
+# Entering the values 
+customer_id <- c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5)
+trans_id <- c(0001, 0024, 0012, 0031, 0015, 0022, 0029, 0040, 0033, 0038)
+items_bought <- list( c("a", "d", "e"), c("a","b","c","e"), c("a","b","d","e"), c("a","c","d","e"), c("b","c","e"), c("b","d","e"), c("c","d"), c("a", "b", "C"), c("a", "d", "e"), c("a","b","c"))
+
+# creating a named list for support and confidence 
+support = list()
+confidence = list()
+for (item in c("a", "b", "c", "d", "e"))
+{ 
+  count = 0 
+  for (i in 1:length(items_bought)){ 
+   if ( item %in% items_bought[[i]] ) {
+     count = count + 1 
+    }
+  }
+  support[item] = count 
+}
+support
+confidence <- sapply(support, function(x){ as.numeric(x[[1]] / 10) })
+confidence
+```
+
+Solution: 
+
+Q1. The confidence for associative rule `{b, d} ->  {a}`      
+
+
+  S(a) = 7 / 10       
+  s(b, d) = 2 / 10      
+  s(a, b, d) = 1 / 10 
+  s((b,d) -> (a)) = 1 / 10
+  
+  C((b,d) -> (a) = S(a, b, d) / S(b, d) = (1 / 10) / (2 / 10) = 0.5
+  
+Q2. The confidence for associative rule `{a} -> {b, d}`    
+  Similarly,         
+  S(a -> (b,d)) = 1 / 10       
+  C(a -> (b, d)) = 1/ 7 = 0.14 
+
+
+- Support indicates the frequency/probability at which the event has occured, i.e. S((b, d) -> a) implies the probable sale of (a,b,d) in a basket.
+- Confidence implies the probability for someone to buy item `a` along with `(b, c)`
+- So, it implies in a basket of {b, d}, we will find {a} half the times.
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-8.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+**Note** : Here we did all the analysis treating each transaction as a basket, we can also treat  each customers as baskets ( i.e to club all the transaction of a customer and make it a basket). Try doing the same problem considering each customer as a basket.
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-9.PNG)
+<br /> 
+<br /> 
+<br /> 
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-7-10.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+
+To know more about [market basket analysis ](http://en.wikipedia.org/wiki/Affinity_analysis), read through the example scenarios.
+
+Courtesy
+========
+  - Shamelesly copied form here and there + my examples. Mainly [Stats 202](stats202.com) + Analytics Edge(edx).
+  - Created using [Markdown](http://en.wikipedia.org/wiki/Markdown) + [Knitr](http://yihui.name/knitr/)

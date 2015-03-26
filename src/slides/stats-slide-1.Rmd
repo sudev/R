@@ -1,0 +1,39 @@
+---
+title: "Stats 202 - Slide - 1"
+author: "Sudev"
+output: html_document
+---
+     
+     
+     
+![alt text](assets/slide-1-1.PNG)
+     
+     
+     
+
+![alt text](assets/slide-1-2.PNG)
+     
+     
+     
+     
+![alt text](assets/slide-1-3.PNG)
+     
+     
+     
+     
+![alt text](assets/slide-1-4.PNG)
+     
+     
+     
+     
+![alt text](assets/slide-1-5.PNG)
+     
+     
+     
+     
+![alt text](assets/slide-1-6.PNG)
+     
+     
+     
+     
+![alt text](assets/slide-1-7.PNG)

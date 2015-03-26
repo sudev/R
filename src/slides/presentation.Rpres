@@ -1,0 +1,158 @@
+R Introduction 
+========================================================
+author: 
+date: 
+
+Agenda
+========================================================
+- Introduction (~15 mins)
+- Installation (~5 Mins)
+- Basic Introduction to data types in R (~20 mins)
+
+*Note*: Please start the copying R.
+
+`\\IN16992875W1\Share`
+
+Introduction
+========================================================
+If you are new to R, you might wonder what makes learning such a quirky language worthwhile. To me, some of the best features are:
+
+- It's free, open source, and available on every major platform. As a result, if 
+  you do your analysis in R, anyone can easily replicate it.
+
+- A massive set of packages for statistical modelling, machine learning,  visualisation, and importing and manipulating data. Whatever model or  graphic you're trying to do, chances are that someone has already tried to do it. At a minimum, you can learn from their efforts.
+
+Introduction
+========================================================
+
+* Cutting edge tools. Researchers in statistics and machine learning will often   publish an R package to accompany their articles. This means immediate access to the very latest statistical techniques and implementations.
+
+* Deep-seated language support for data analysis. This includes features likes missing values, data frames, and subsetting.
+
+* Powerful tools for communicating your results. R packages make it easy to produce html or pdf [reports](http://yihui.name/knitr/), or create [interactive websites](http://www.rstudio.com/shiny/).
+
+* Designed to connect to high-performance programming languages like C,
+  Fortran, and C++.
+
+Introduction
+========================================================
+
+Of course, R is not perfect. R's biggest challenge is that most R users are not programmers. This means that:
+
+* Much of the R code you'll see in the wild is written in haste to solve
+  a pressing problem. As a result, code is not very elegant, fast, or easy to
+  understand. Most users do not revise their code to address these shortcomings.
+
+* Compared to other programming languages, the R community tends to be more
+  focussed on results instead of processes.
+
+* R is not a particularly fast programming language, and poorly written R code
+  can be terribly slow. R is also a profligate user of memory. 
+
+Installation 
+========================================================
+
+- Install R     
+  [CRAN](http://cran.r-project.org/), this is master repo all R development.
+- Install [Rstudio](http://www.rstudio.com/)     
+An IDE for R, enhanced features, good for development. 
+- *Console in Rstudio*
+- *Variable Assignment*
+
+Data Types 
+========================================================
+
+R's base data structures can be organised by their dimensionality (1d, 2d, or nd) and whether they're **homogeneous** (all contents must be of the same type) or **heterogeneous** (the contents can be of different types). This gives rise to the five data types most often used in data analysis: 
+
+|    | Homogeneous   | Heterogeneous |
+|----|---------------|---------------|
+| 1d | Atomic vector | List          |
+| 2d | Matrix        | Data frame    |
+| nd | Array         |               |
+
+Data Types - Vectors
+========================================================
+
+The basic data structure in R is the vector. Vectors come in two flavours: 
+- Atomic vectors 
+- Lists 
+
+Data Types - Atomic Vectors
+========================================================
+
+There are four common types of atomic vectors **logical**, **integer**, **double** (often called numeric), and **character**. There are two rare types complex and raw.
+
+Atomic vectors are created using `c()`. [short for combine]
+
+```{r}
+dbl_var <- c(1, 2.5, 4.5)
+# With the L suffix, you get an integer rather than a double
+int_var <- c(1L, 6L, 10L)
+# Use TRUE and FALSE (or T and F) to create logical vectors
+log_var <- c(TRUE, FALSE, T, F)
+chr_var <- c("these are", "some strings")
+```
+
+**Note** : Show more operations and stuff 
+
+Data Types - Atomic Vector, Coercion
+========================================================
+
+All elements of an atomic vector must be the same type, so when you attempt to combine different types they will be __coerced__ to the most flexible type. Types from least to most flexible are: logical, integer, double, and character.
+
+For example, combining a character and an integer yields a character:
+
+```{r}
+str(c("a", 1))
+```
+
+Data Types - Atomic Vector, Coercion
+========================================================
+When a logical vector is coerced to an integer or double, `TRUE` becomes 1 and `FALSE` becomes 0. This is very useful in conjunction with `sum()` and `mean()`
+
+```{r}
+x <- c(FALSE, FALSE, TRUE)
+
+# Total number of TRUEs
+sum(as.numeric(x))
+
+# Proportion that are TRUE
+mean(as.numeric(x))
+```
+
+Data Types - Lists
+========================================================
+
+Lists are different from atomic vectors because their elements can be of any type, including lists. You construct lists by using `list()` instead of `c()`.
+```{r}
+x <- list(1:3, "a", c(TRUE, FALSE, TRUE), c(2.3, 5.9))
+str(x)
+```
+
+
+Data Types - Lists
+========================================================
+Lists are sometimes called __recursive__ vectors, because a list can contain other lists. This makes them fundamentally different from atomic vectors.
+
+```{r}
+x <- list(list(list(list())))
+str(x)
+is.recursive(x)
+```
+
+Data Types - Lists
+========================================================
+List are like associative arrays too.
+
+```{r}
+y <- c(a = 1, 2, 3)
+names(y)
+
+z <- c(1, 2, 3)
+names(z)
+```
+
+Thank you!
+========================================================
+
+

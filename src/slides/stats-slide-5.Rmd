@@ -1,0 +1,157 @@
+---
+title: "stats-slide-5"
+author: "Sudev"
+date: "Monday, March 23, 2015"
+output: html_document
+---
+
+# Classification 
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-1.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-2.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+## Examples 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-3.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+
+There are many [classification algorithms](http://en.wikipedia.org/wiki/Category:Classification_algorithms) now.  We will start with something simple, [Decision trees](http://en.wikipedia.org/wiki/Decision_tree).
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-4.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+How do we use the given decision tree with test data ? 
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-5.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-6.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+### Using R
+```{r}
+#install.packages("rpart")
+library(rpart)
+setwd("~/Desktop/Everything Else/R")
+train<-read.csv("assets/sonar_train.csv",header=FALSE)
+# Number of fields in the dataset 
+length(train)
+# Number of observations in the dataset 
+nrow(train)
+# VERY IMPORTANT, you have to make it factor so that it wont confuse with regression trees
+y<-as.factor(train[,61])
+x<-train[,1:60]
+```
+You make a model in R using the rpart library.
+```{r}
+# making a Model 
+# Here x the dataset
+# y is what you want to predict 
+fit<-rpart(y~.,x)
+# we use the function predict to output the prediction of the model 
+predict(fit, x, type="class")
+# check how it matchs with the actual data
+# y==predict(fit,x,type="class")
+# percentage accuracy
+per = ((sum(y==predict(fit,x,type="class"))/length(y))) 
+per * 100
+```
+
+Above we have calculated the percentage accuracy considering the same data. Now lets see how well it does on a new data.
+```{r}
+test<-read.csv("assets/sonar_test.csv",header=FALSE)
+y_test<-as.factor(test[,61])
+x_test<-test[,1:60]
+per = sum(y_test==predict(fit,x_test,type="class"))/length(y_test)
+per * 100
+# Miss classification error 
+(1 - per ) * 100 
+```
+
+Now let's have a look at the model. What did R actually make ?
+```{r}
+fit
+# YOu can also use the pot function to plot the fit to see the tree 
+plot(fit)
+text(fit)
+```
+
+<br />
+Repeat the previous exercise for a tree of depth 1 by using control=rpart.control(maxdepth=1). Which model seems better?
+
+```{r}
+fit <- rpart(y~.,x,control=rpart.control(maxdepth=1))
+# On training data 
+sum(y==predict(fit,x,type="class"))/length(y)
+# On test data
+sum(y_test==predict(fit,x_test,type="class"))/length(y_test)
+# Check whats the new model 
+fit
+```
+
+Repeat the previous exercise for a tree of depth 6 by using `control=rpart.control(minsplit=0,minbucket=0,
+cp=-1,maxcompete=0, maxsurrogate=0, sesurrogate=0, xval=0,maxdepth=6)` Which model seems better?
+```{r}
+fit<-rpart(y~.,x,
+control=rpart.control(minsplit=0,  
+minbucket=0,cp=-1,maxcompete=0,
+maxsurrogate=0, usesurrogate=0, xval=0,maxdepth=6))
+# How good is this on training data ?
+per = sum(y==predict(fit,x,type="class"))/length(y)
+per * 100 
+# And on training data
+per = sum(y_test==predict(fit,x_test,type="class"))/length(y_test)
+per * 100 
+```
+
+How do we make these trees ? 
+
+### Hunts Algorithm
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-7.PNG)
+<br /> 
+<br /> 
+<br /> 
+
+<br /> 
+<br /> 
+<br /> 
+![alt text](assets/slide-10-8.PNG)
+<br /> 
+<br /> 
+<br /> 

@@ -1,0 +1,142 @@
+---
+title: "stats-slide-2"
+author: "Sudev"
+output: html_document
+---
+
+
+### Factors
+
+One important use of attributes is to define factors. A factor is a vector that can contain only predefined values, and is used to store categorical data. Factors are built on top of integer vectors using two attributes: the `class()`, "factor", which makes them behave differently from regular integer vectors, and the `levels()`, which defines the set of allowed values.
+
+```{r}
+x <- factor(c("a", "b", "b", "a"))
+x
+class(x)
+levels(x)
+
+# You can't use values that are not in the levels
+x[2] <- "c"
+x
+
+# NB: you can't combine factors
+c(factor("a"), factor("b"))
+```
+
+Factors are useful when you know the possible values a variable may take, even if you don't see all values in a given dataset. Using a factor instead of a character vector makes it obvious when some groups contain no observations:
+
+```{r}
+sex_char <- c("m", "m", "m")
+sex_factor <- factor(sex_char, levels = c("m", "f"))
+
+table(sex_char)
+table(sex_factor)
+```
+
+Sometimes when a data frame is read directly from a file, a column you'd thought would produce a numeric vector instead produces a factor. This is caused by a non-numeric value in the column, often a missing value encoded in a special way like `.` or `-`. To remedy the situation, coerce the vector from a factor to a character vector, and then from a character to a double vector. (Be sure to check for missing values after this process.) Of course, a much better plan is to discover what caused the problem in the first place and fix that; using the `na.strings` argument to `read.csv()` is often a good place to start.
+
+```{r}
+# Reading in "text" instead of from a file here:
+z <- read.csv(text = "value\n12\n1\n.\n9")
+z
+typeof(z$value)
+as.double(z$value)
+# Oops, that's not right: 3 2 1 4 are the levels of a factor, 
+# not the values we read in!
+class(z$value)
+# We can fix it now:
+as.double(as.character(z$value))
+# Or change how we read it in:
+z <- read.csv(text = "value\n12\n1\n.\n9", na.strings=".")
+typeof(z$value)
+class(z$value)
+z$value
+# Perfect! :)
+```
+
+
+![alt text](assets/slide-2-1.PNG)
+
+I have reproduced the relevant R discussed in slide-2 here as snippets. The course websites weblog is available at ` `, we will also use the same data to perform some analysis in R.  
+
+Reading data into R, 
+
+```{r}
+data <- read.csv("C:/Users/sudev.ac/Desktop/Everything Else/R/assets/stats202log.txt", sep = " ", header = F)
+```
+
+
+Subsetting 
+
+indexing is as `Row, Coloumn` 
+
+To get the row, 
+```{r}
+data[1,]
+```
+
+To get first five rows,
+
+```{r}
+data[1:5,]
+```
+
+First coloumn 
+```{r}
+# To get first coloumn you should use 
+# data[ , 1]
+
+# I have subsetted the first coloumn to show only 10 elements, the syntaxt to get entire first coloumn is data[ , 1]
+data[ , 1][1:10]
+is.factor(data[,1])
+```
+
+Sometimes `read.csv()` wont give the desired result.
+```{r}
+data[,8][1:10]
+is.factor(data[,8])
+
+# but it should be a  numberic field 
+```
+
+This issue is due to not telling `read.csv()` that `-` should be considered as `NA` or missing value.
+```{r}
+data <- read.csv("C:/Users/sudev.ac/Desktop/Everything Else/R/assets/stats202log.txt", sep = " ", header = F, na.strings="-")
+is.numeric(data[,8])
+```
+
+### Let me show you something here
+
+Till now its been boring numbers, say if we wanted to see the page which got max number of hit from this log and tabulate that.
+As you can see the GET request indicates the visisted/requested page.
+```{r}
+data[, 6][1:5]
+```
+Now, lets get the URI out of the `GET` requesst string. Using function `strsplit` you can split character vectors with any specified split character.
+
+```{r}
+# In this log the split character is space.
+newList <- strsplit(as.character(data[,6]), split = " ")
+# Now we have a list of list.
+newList[1:3]
+```
+ Its hard to tabulate when its a list. `Unlist` function will flatten a list. 
+ 
+```{r}
+newList <- unlist(newList)
+newList[1:10]
+
+```
+Now we will index out every third element starting from position 2, so as to get the links.
+```{r}
+links <- newList[seq(2, length(newList), by =3)]
+# sample element in links 
+links[1:10]
+# Table function creates a table with [value, frequency] pair
+table(links)
+```
+
+Courtesy
+========
+  - Shamelesly copied form here and there + my examples. Mainly [Stats 202](stats202.com).
+  - Created using [Markdown](http://en.wikipedia.org/wiki/Markdown) + [Knitr](http://yihui.name/knitr/)

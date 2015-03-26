@@ -1,0 +1,268 @@
+Classification of data
+========================================================
+author: Sudev
+date: 25 March, 2015
+
+Classification 
+========================================================
+
+![alt text](assets/slide-10-1.PNG)
+
+
+========================================================
+![alt text](assets/slide-10-2.PNG)
+
+Methods to classify
+========================================================
+
+There are many [classification algorithms](http://en.wikipedia.org/wiki/Category:Classification_algorithms) now.  We will start with something simple, [Decision trees](http://en.wikipedia.org/wiki/Decision_tree).
+
+
+How do we use the given decision tree with test data ? 
+========================================================
+
+
+![alt text](assets/slide-10-5.PNG)
+
+========================================================
+![alt text](assets/slide-10-6.PNG)
+ 
+Using R
+========================================================
+
+```{r}
+setwd("~/Desktop/Everything Else/R")
+train=read.csv("assets/sonar_train.csv",header=FALSE)
+# Number of fields in the dataset 
+length(train)
+# Number of observations in the dataset 
+nrow(train)
+```
+
+========================================================
+```{r}
+# VERY IMPORTANT, you have to make the the thing to be predicted a factor so that prediction algorithm to work properly. 
+y=as.factor(train[,61])
+x=train[,1:60]
+```
+Here `x` is the independent set of variables that we will use to predict the `y`. 
+
+Model 1 (Default model)
+========================================================
+You make a model in R using the rpart library.
+```{r }
+#install.packages("rpart")
+library(rpart)
+
+model1 = rpart(y ~., x)
+```
+Here `x` the dataset, `y` is the value that you want to predict. To make a model use the `rpart` function. 
+So now we have the model in variable `model1`.
+
+Also, we mention the fields/variables that we need to consider for modelling after the `~`, here we have given "`.`" which tells rpart to consider all the fields for prediction.
+
+Model 1 (Default model)
+========================================================
+```{r}
+# we use the function predict to output the predicted values using the model
+model1TrainPreds = predict(model1, x, type="class") 
+# Sample predicted values
+model1TrainPreds[1:5]
+```
+
+Model 1 (Default model)
+========================================================
+Check how well it matches with actual data
+```{r} 
+# A function to find percentage accuracy
+percentageAccuracy = function(predVals, actualVals) { 
+  totalCorrect = sum(predVals == actualVals)
+  per = totalCorrect / length(actualVals)
+  per * 100
+}
+```
+
+Model 1 (Default model)
+========================================================
+
+```{r}
+# Call function with Predicted Values and Actual Values
+percentageAccuracy(model1TrainPreds, y)
+```
+Here we have calculated the percentage accuracy considering the same(training) data. Now lets see how well it does on a new data.
+
+Model 1 (Default model)
+========================================================
+Now, use the test data set. 
+```{r} 
+test=read.csv("assets/sonar_test.csv",
+               header=FALSE)
+y_test=as.factor(test[,61])
+x_test=test[,1:60]
+model1TestPreds = predict(model1,x_test,type="class")
+```
+
+```{r}
+# Finding the accuracy
+percentageAccuracy(model1TestPreds, y_test)
+```
+
+Let's have a look at the model.
+========================================================
+What happening under the hood ?
+
+Model 1 (Default model)
+========================================================
+```{r}
+# You can also use the plot function to view the model (tree)
+plot(model1)
+text(model1)
+```
+ 
+Model 2 (Restricting the maxdepth)
+========================================================
+Repeat the previous exercise for a tree of depth 1 by using `control=rpart.control(maxdepth=1)`. Which model seems better? 
+
+```{r}
+model2 = rpart(y~.,x,control=rpart.control(maxdepth=1))
+model2TrainPreds = predict(model2,x,type="class")
+```
+Model 2 Training data prediction accuracy.
+```{r}
+percentageAccuracy(model2TrainPreds, y)
+```
+ 
+ Model 2 (Restricting the maxdepth)
+========================================================
+
+Model 2 Test data prediction accuracy.
+```{r}
+model2TestPreds = predict(model2,x_test,type="class")
+percentageAccuracy(model2TestPreds, y_test)
+```
+
+Model 2 (Restricting the maxdepth)
+========================================================
+
+Check whats in model2. Its a tree with depth one. 
+```{r}
+plot(model2)
+text(model2) 
+```
+
+
+Model 3 (Maximum branches)
+========================================================
+Repeat the previous exercise for a tree of depth 6 by using
+*control=rpart.control(minsplit=0, minbucket=0, cp=-1,maxcompete=0, maxsurrogate=0, sesurrogate=0, xval=0,maxdepth=6)* .
+ 
+Which model seems better?
+```{r}
+model3 =rpart(y~.,x,
+control=rpart.control(minsplit=0,  
+minbucket=0,cp=-1,maxcompete=0,
+maxsurrogate=0, usesurrogate=0, xval=0,maxdepth=6))
+```
+[Rpart controls](https://stat.ethz.ch/R-manual/R-patched/library/rpart/html/rpart.control.html)
+
+Model 3 (Maximum branches)
+========================================================
+How good is this on training data ?
+```{r}
+model3TrainPreds = predict(model3,x,type="class")
+percentageAccuracy(model3TrainPreds, y)
+```
+
+100% !!! 
+
+This was expected since we are putting everything into model creation and we are running test on training data.
+
+Model 3 (Maximum branches)
+========================================================
+And on test data...
+```{r}
+model3TestPreds = predict(model3,x,type="class")
+percentageAccuracy(model3TestPreds, y_test)
+```
+
+It's hard to hit 100% accuracy.
+
+Model 3 (Maximum branches)
+========================================================
+```{r}
+plot(model3)
+text(model3)
+```
+
+Underfitting vs overfitting
+===========================
+ ![alt text](assets/slide-10-9.PNG)
+
+* [Read more](http://www.statsblogs.com/2014/03/20/machine-learning-lesson-of-the-day-overfitting-and-underfitting/)
+* [Intuitive explanation of overfitting](http://quora.com/What-is-an-intuitive-explanation-of-overfitting)
+* Scikit learn documentation, better explanation with python code [Decision trees](http://scikit-learn.org/stable/modules/tree.html)
+* Underfitting and overfitting are better explained with regression models. 
+
+Comparison
+========================================================
+
+Percentage accuracy 
+
+Model Name  | Training data | Testing data
+------------- | ------------- | -------------
+Model 1  | 88.46 | 69.23 
+Model 2 | 77.69 | 71.69
+Model 3| 100 | 88.46
+How do we/R make these trees ? 
+========================================================
+Hunts Algorithm
+![alt text](assets/slide-10-7.PNG)
+
+========================================================
+![alt text](assets/slide-10-8.PNG)
+
+========================================================
+![alt text](assets/slide-10-12.PNG)
+
+
+========================================================
+![alt text](assets/slide-10-10.PNG) 
+
+
+========================================================
+![alt text](assets/slide-10-11.PNG) 
+
+========================================================
+Here we have to find out the root node. Root node can be either A, B, or C.   
+![alt text](assets/slide-10-13.PNG) 
+
+
+========================================================
+
+![alt text](assets/slide-10-14.PNG)  
+Sample calculation  
+
+========================================================
+
+* Misclasification is the simplest model.    
+`Misclassificaiotn = (1 - PercentageAccuracy)`
+
+* Entropy is used by the [ID3](http://en.wikipedia.org/wiki/ID3_algorithm), [C4.5](http://en.wikipedia.org/wiki/C4.5_algorithm) and [C5.0] tree-generation algorithms using [Information gain](http://en.wikipedia.org/wiki/Information_gain_in_decision_trees) which is based on the concept of [entropy](http://en.wikipedia.org/wiki/Information_entropy).
+
+*  Gini index is used in [CART](ftp://ftp.boulder.ibm.com/software/analytics/spss/support/Stats/Docs/Statistics/Algorithms/14.0/TREE-CART.pdf) and R packagae Rpart.
+
+Read this [part of the book](http://www-users.cs.umn.edu/~kumar/dmbook/ch4.pdf),  it's easy maths.
+
+========================================================
+![alt text](assets/slide-10-15.PNG)  
+
+========================================================
+![alt text](assets/slide-10-16.PNG)  
+
+thank you!
+========================================================
+
+Courtesy
+
+  - Shamelesly copied form here and there + my examples. Mainly [Stats 202](stats202.com).
+  - Created using [Markdown](http://en.wikipedia.org/wiki/Markdown) + [Knitr](http://yihui.name/knitr/)

@@ -1,0 +1,324 @@
+---
+title: "R Introduction"
+author: "Sudev"
+output: html_document
+---
+
+Installation 
+========================================================
+
+- Install R     
+  [CRAN](http://cran.r-project.org/), this is master repo all R development.
+- Install [Rstudio](http://www.rstudio.com/)     
+  An IDE for R, enhanced features, good for development. 
+- Link Rstudio to R, Usually default location for R installation is under Documents.
+
+*Note*: Please start the copying R, from the location given below.
+
+`\\IN16992875W1\Share`
+
+Introduction
+========================================================
+If you are new to R, you might wonder what makes learning such a quirky language worthwhile. To me, some of the best features are:
+
+- It's free, open source, and available on every major platform. As a result, if 
+  you do your analysis in R, anyone can easily replicate it.
+
+- A massive set of packages for statistical modelling, machine learning,  visualisation, and importing and manipulating data. Whatever model or  graphic you're trying to do, chances are that someone has already tried to do it. At a minimum, you can learn from their efforts.
+
+* Cutting edge tools. Researchers in statistics and machine learning will often   publish an R package to accompany their articles. This means immediate access to the very latest statistical techniques and implementations.
+
+- Deep-seated language support for data analysis. This includes features likes missing values, data frames, and subsetting.
+
+- Powerful tools for communicating your results. R packages make it easy to produce html or pdf [reports](http://yihui.name/knitr/), or create [interactive websites](http://www.rstudio.com/shiny/).
+
+* Designed to connect to high-performance programming languages like C,
+  Fortran, and C++.
+
+#### Not that awesome !
+
+
+Of course, R is not perfect. R's biggest challenge is that most R users are not programmers. This means that:
+
+* Much of the R code you'll see in the wild is written in haste to solve
+  a pressing problem. As a result, code is not very elegant, fast, or easy to
+  understand. Most users do not revise their code to address these shortcomings.
+
+* Compared to other programming languages, the R community tends to be more
+  focussed on results instead of processes.
+
+* R is not a particularly fast programming language, and poorly written R code
+  can be terribly slow. R is also a profligate user of memory. 
+
+
+#### Variable Assignment operator
+
+`<-` or `=:`
+
+`<-` is more preffered.
+
+So say you want to assign a variable `x` with value `2`.
+```{r}
+x <-  2
+y <- "String"
+```
+ 
+- R is loosely typed language, you dont have to specify String/Integer it's inferred.
+- You can check the data type of a variable using `typeof()`
+
+```{r}
+typeof(x)
+typeof(y)
+```
+
+Data Types 
+========================================================
+
+R's base data structures can be organised by their dimensionality (1d, 2d, or nd) and whether they're **homogeneous** (all contents must be of the same type) or **heterogeneous** (the contents can be of different types). This gives rise to the five data types most often used in data analysis: 
+
+|    | Homogeneous   | Heterogeneous |
+|----|---------------|---------------|
+| 1d | Atomic vector | List          |
+| 2d | Matrix        | Data frame    |
+| nd | Array         |               |
+
+### Vectors
+
+
+The basic data structure in R is the vector. Vectors come in two flavours: 
+
+- Atomic vectors 
+- Lists 
+
+### Atomic Vectors
+
+There are four common types of atomic vectors **logical**, **integer**, **double** (often called numeric), and **character**. There are two rare types complex and raw.
+
+Atomic vectors are created using `c()`. *short for combine*
+
+If we dont specify anything the **numbers** are ususally initialised as **double**.
+```{r}
+
+dbl_var <- c(1, 2.5, 4.5)
+dbl_var
+```
+
+With the L suffix, you get an **integer** rather than a double.
+```{r}
+
+int_var <- c(1L, 6L, 10L)
+int_var
+```
+
+
+Similarly boolean and string types  
+```{r}
+
+log_var <- c(TRUE, FALSE, T, F)
+log_var
+chr_var <- c("these are", "some strings")
+chr_var
+```
+
+##### Accessing the elements 
+You can access the values using index 'ing . 
+```{r}
+y <- c("one", "two", "three", "four", "five", "six")
+y 
+```
+To access say, first and thiird elements 
+```{r}
+y[1]
+y[3]
+```
+To acces say, 1st ,4th and 6th element. 
+```{r}
+# Create a vector with all required index 
+indx <- c(1,4,6)
+y[indx]
+```
+
+##### Concatenating two vectors
+```{r}
+x  <- c(1,2)
+y  <- c(3,4)
+```
+Using `c()` operator 
+```{r}
+z <- c(x,y)
+z
+```
+
+
+##### Sequence values 
+
+```{r}
+y <- 1:100
+y
+```
+
+You can create custom sequences too..
+```{r}
+x <- seq(from=1, to=200, by=2)
+x
+```
+
+
+##### Type checking functions 
+```{r}
+y <- c(1)
+# Type check
+typeof(y)
+is.character(y)
+is.numeric(y)
+```
+
+##### Operations on Atomic Vectors 
+
+Using R you can avoid a hell lot of for loops. 
+
+**Say you want to multiply each element in a vector by factor. **
+```{r}
+y <- 1:10
+y
+y*4
+```
+
+You can add up element by element of two vectors.      
+Make sure the length of adding up vectors are the same.
+```{r}
+y <- 1:5
+x <- 6:10
+x+y
+```
+Simillarly you can use any of the common mathematical operators `=`, `+`, `-`, `%` etc.
+
+**Lets write a program to check to all odd numbers within a vector**
+
+*Strangely, you might have a better version of solution for this problem. But this is an example, to show howto program in R.*
+
+```{r}
+y <- 1:10
+y
+# Lets do a modulus 
+y %% 2
+# make it a logical vector
+as.logical(y %% 2)
+# index is logical vector, only position where TRUE is indexed
+y[as.logical(y %% 2)]
+```
+
+### Atomic Vector, Coercion
+
+All elements of an atomic vector must be the same type, so when you attempt to combine different types they will be __coerced__ to the most flexible type. Types from least to most flexible are: logical, integer, double, and character.
+
+
+#### A good feature 
+When a logical vector is coerced to an integer or double, `TRUE` becomes 1 and `FALSE` becomes 0. This is very useful in conjunction with `sum()` and `mean()`
+
+```{r}
+x <- c(FALSE, FALSE, TRUE)
+
+# Total number of TRUEs
+sum(as.numeric(x))
+
+# Proportion that are TRUE
+mean(as.numeric(x))
+```
+
+#### It can be bad too..
+
+For example, combining a character and an integer yields a character, this is dangerous!!.
+  
+```{r}
+str(c("a", 1))
+```
+
+
+
+## Data types - Lists
+
+
+Lists are different from atomic vectors because their elements can be of any type, including lists. You construct lists by using `list()` instead of `c()`.
+```{r}
+x <- list(1:3, "a", c(TRUE, FALSE, TRUE), c(2.3, 5.9))
+str(x)
+```
+
+
+Lists are sometimes called __recursive__ vectors, because a list can contain other lists. This makes them fundamentally different from atomic vectors.
+
+```{r}
+x <- list(list(list(list())))
+str(x)
+is.recursive(x)
+```
+
+List are like associative arrays too.
+
+```{r}
+y <- c(a = 1, 2, 3)
+names(y)
+
+z <- c(1, 2, 3)
+names(z)
+```
+
+#### Subsetting List 
+Subsetting a list works in the same way as subsetting an atomic vector. Using `[` will always return a list; `[[` and `$`, as described below, let you pull out the components of the list.
+
+```{r}
+a <- list(a = 1, b = 2)
+a[[1]]
+a[1]
+typeof(a[[1]])
+typeof(a[1])
+# YOu can use the name too 
+a[["a"]]
+#> [1] 1
+a$a
+a$b
+```
+
+
+
+
+Missing Values 
+===============
+Missing values in R is represented as `NA`. `NA` inherits a logical class object, but it's neither TRUE / FALSE.
+
+An example to illustrate
+```{r}
+y <- c(1,2,3,NA)
+y
+```
+The type of vecttor is still preserved 
+```{r}
+
+typeof(y)
+```
+
+`NA` and `NULL` are different things
+
+`NULL` => Traditional NULL
+
+`NA` => Indicates missing value.
+```{r}
+x <- c(NA, NULL)
+x
+```
+
+Look at the length of x, which is 1. Since NA is element indicating missing value its present in the vector, but NULL is our traditional *java* null.
+
+```{r}
+length(x)
+# check if somthing is NA
+is.na(NA)
+# check if something is NULL
+is.null(NA)
+```
+
+Courtesy
+========
+  - Shamelesly copied form here and there + my examples. Mainly used [Advance R, A great tutorial for novice/advanced programmer](http://adv-r.had.co.nz), so please don't share this.
+  - Created using [Markdown](http://en.wikipedia.org/wiki/Markdown) + [Knitr](http://yihui.name/knitr/)
